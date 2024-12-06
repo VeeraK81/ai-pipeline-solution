@@ -214,7 +214,7 @@ with DAG(
             export BUCKET_NAME={BUCKET_NAME}
             export FILE_KEY={FILE_KEY}
             export PATH=$PATH:/home/ubuntu/.local/bin
-            mlflow run https://github.com/VeeraK81/ai-pipeline-workflow --build-image    
+            mlflow run https://github.com/VeeraK81/ai-pipeline-ml-training.git --build-image    
             """
             
             # Run your training command via SSH
