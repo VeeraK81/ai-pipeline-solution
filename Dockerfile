@@ -32,7 +32,6 @@ RUN --mount=type=secret,id=SERVER_SECRETS,mode=0444 \
 # GET POSTGRES URL FROM HUGGING FACE SECRETs
 RUN --mount=type=secret,id=AI_DB_URL,mode=0444,required=true \
     cat /run/secrets/AI_DB_URL > /tmp/AI_DB_URL 
-
     
 RUN usermod -u 1000 airflow
 
