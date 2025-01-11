@@ -48,14 +48,14 @@ DAG_ID = 'ai_jenkins_ec2_training_dag'
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    'start_date': datetime(2023, 1, 1),
+    'start_date': datetime(2024, 9, 1),
     'retries': 1,
 }
 
 # Define the DAG
 with DAG(
     dag_id=DAG_ID,
-    schedule_interval=None,
+    schedule_interval='0 1 * * *',
     default_args=default_args,
     description="Poll Jenkins, launch EC2, and run ML training",
     catchup=False,
@@ -98,7 +98,7 @@ with DAG(
             
             time.sleep(30)  # Poll every 30 seconds
 
-    # Step 2: Create EC2 Instance Using EC2 Operator
+    # Step 3: Create EC2 Instance Using EC2 Operator
     create_ec2_instance = EC2CreateInstanceOperator(
         task_id="create_ec2_instance",
         image_id= AMI_ID,  
@@ -118,7 +118,7 @@ with DAG(
         wait_for_completion=True,  # Wait for the instance to be running before proceeding
     )
 
-    # Step 3: Use EC2 Sensor to Check if Instance is Running
+    # Step 4: Use EC2 Sensor to Check if Instance is Running
     @task
     def check_ec2_status(instance_id):
         """Check if the EC2 instance has passed both status checks (2/2 checks passed)."""
@@ -159,7 +159,7 @@ with DAG(
 
         return True
 
-    # Step 4: Define Run Training as an @task to Get EC2 Public IP
+    # Step 5: Define Run Training as an @task to Get EC2 Public IP
     @task
     def get_ec2_public_ip(instance_id):
         """Retrieve the EC2 instance public IP for SSH."""
@@ -186,7 +186,6 @@ with DAG(
 
         # Return the public IP for the SSH task
         return public_ip
-
 
     @task
     def run_training_via_paramiko(public_ip):
@@ -249,4 +248,5 @@ with DAG(
     check_ec2_instance=check_ec2_status(create_ec2_instance.output)
     ssh_training_task = run_training_via_paramiko(ec2_public_ip)
     
+    # Define task dependencies
     jenkins_poll >> create_ec2_instance >> check_ec2_instance >> ec2_public_ip >> ssh_training_task >> terminate_instance

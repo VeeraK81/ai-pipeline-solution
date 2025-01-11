@@ -52,7 +52,7 @@ USER root
 COPY --chown=root:root entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-
+# Get variable by running script
 ENTRYPOINT ["/entrypoint.sh"]
 USER airflow
 

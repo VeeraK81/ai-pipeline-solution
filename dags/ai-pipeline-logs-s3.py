@@ -13,14 +13,14 @@ DAG_ID = 'ai_logs'
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    'start_date': datetime(2023, 1, 1),
+    'start_date': datetime(2025, 1, 1),
     'retries': 1,
 }
 
 # Define the DAG
 with DAG(
     dag_id=DAG_ID,
-    schedule_interval='@daily',
+    schedule_interval='0 1 * * *',
     default_args=default_args,
     description="Save airflow logs to Data Lake",
     catchup=False,

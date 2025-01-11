@@ -36,7 +36,7 @@ import json
 import mlflow
 from airflow.models import Variable
 
-# Evidently Cloud API
+# Evidently Cloud API variables
 EVIDENTLY_BASE_URL = Variable.get("EVIDENTLY_BASE_URL")
 EVIDENTLY_PROJECT_ID = Variable.get("EVIDENTLY_PROJECT_ID")
 EVIDENTLY_API_TOKEN = Variable.get("EVIDENTLY_API_TOKEN")
@@ -46,7 +46,6 @@ MLFLOW_EXPERIMENT_ID=Variable.get("MLFLOW_EXPERIMENT_ID")
 # Calculate metrics using Evidently
 def calculate_metrics(**kwargs):
     # Set MLflow tracking URI
-    # mlflow.set_tracking_uri("http://host.docker.internal:8082")
     mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
 
     # Retrieve the runs from a specific experiment
@@ -66,14 +65,13 @@ def calculate_metrics(**kwargs):
     reference_df = pd.DataFrame([reference_data])
     current_df = pd.DataFrame([current_data])
     
+    print("Ref Run Id", reference_run_id)
+    print("Latest Run Id", latest_run_id)
     print("reference_df", reference_df)
 
     # Create a column mapping for Evidently (adjust according to your data)
-    
     data = [reference_df, current_df]
 
-    
-    
     # Push the metrics to Evidently using Airflow XCom
     kwargs['ti'].xcom_push(key='evidently_metrics', value=data)
     
@@ -114,6 +112,7 @@ def send_to_evidently(**kwargs):
     # Send report to Evidently Cloud
     projectId = EVIDENTLY_PROJECT_ID
     
+    # add report to Evidently Cloud
     ws.add_report(projectId, report)
     
     
