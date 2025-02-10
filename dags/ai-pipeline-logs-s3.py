@@ -20,7 +20,8 @@ default_args = {
 # Define the DAG
 with DAG(
     dag_id=DAG_ID,
-    schedule_interval='0 1 * * *',
+    # schedule_interval='0 1 * * *',
+    schedule_interval='@weekly',
     default_args=default_args,
     description="Save airflow logs to Data Lake",
     catchup=False,
